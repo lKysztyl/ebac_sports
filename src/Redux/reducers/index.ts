@@ -1,21 +1,32 @@
-import { createSlice } from '@reduxjs/toolkit'
-import type { PayloadAction } from '@reduxjs/toolkit'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { WritableDraft } from 'immer/dist/internal'
+import { IProduto } from './cart'
 
-const userSlice = createSlice({
-  name: 'user',
-  initialState: {
-    name: 'Zeki',
-    age: 2900
-  },
+export interface IFavorite {
+  favorites: WritableDraft<IProduto>[]
+}
+
+const initialState: IFavorite = {
+  favorites: []
+}
+
+const favoriteSlice = createSlice({
+  name: 'favorite',
+  initialState,
   reducers: {
-    setName: (state, action) => {
-      state.name = action.payload
+    setFavorites: (state, action: PayloadAction<WritableDraft<IProduto>[]>) => {
+      const newFavorites = action.payload
+      state.favorites = []
+
+      state.favorites.push(...newFavorites)
     },
-    setAge: (state, action) => {
-      state.age = action.payload
+    removeFavorite: (state, action: PayloadAction<number>) => {
+      state.favorites = state.favorites.filter(
+        (favorite) => favorite.id !== action.payload
+      )
     }
   }
 })
 
-export const { setName, setAge } = userSlice.actions
-export default userSlice.reducer
+export const { setFavorites, removeFavorite } = favoriteSlice.actions
+export default favoriteSlice.reducer
